@@ -70,31 +70,25 @@ func getPart() (part string) {
 	return
 }
 
-func cron(file string) {
-	tricker := time.NewTicker(time.Second)
-	for range tricker.C {
-		nowTime := time.Now().Unix()
-		if nowTime % 60 < 1 {
-			err := countItems(file)
-			if err != nil {
-				continue
-			}
-			// 如果map为空，则不打日志
-			if len(countItemsMap) == 0 {
-				continue
-			}
-
-			logStr := "items ["
-			for k, v := range countItemsMap {
-				kvStr := fmt.Sprintf("%s=%d,", k, v)
-				logStr += kvStr
-			}
-			logStr += "]"
-
-			logs.Info(logStr)
-			// 清空map
-			countItemsMap = make(map[string]int)
-		}
+func countKeyNum(){
+	err := countItems(appConf.CountFile)
+	if err != nil {
+		return
 	}
-	waitGroup.Done()
+	// 如果map为空，则不打日志
+	if len(countItemsMap) == 0 {
+		return
+	}
+
+	logStr := "items ["
+	for k, v := range countItemsMap {
+		kvStr := fmt.Sprintf("%s=%d,", k, v)
+		logStr += kvStr
+	}
+	logStr += "]"
+
+	logs.Info(logStr)
+	// 清空map
+	countItemsMap = make(map[string]int)
+
 }

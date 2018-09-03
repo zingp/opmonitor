@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 	"github.com/astaxie/beego/logs"
+	"github.com/robfig/cron"
 )
 
 var waitGroup sync.WaitGroup
@@ -28,8 +29,9 @@ func main() {
 		go checkProc(k, v.StartCmd, time.Duration(v.TimeInterval)* time.Second)
 	}
 
-	waitGroup.Add(1)
-	go cron(appConf.CountFile)
+	c := cron.New()
+	c.AddFunc("1 * * * *", countKeyNum)
+	c.Start()
 
 	logs.Info("monitor start")
 	waitGroup.Wait()
